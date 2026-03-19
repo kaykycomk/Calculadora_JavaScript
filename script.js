@@ -12,7 +12,7 @@ function subtracao(a, b){
     return a - b;
 }
 
-function mulplicacao(a, b){
+function multiplicacao(a, b){
     return a * b;
 }
 
@@ -41,19 +41,33 @@ botoes.forEach(botao => {
        
         if (valor === "=") {
             try {
-                let contaJS = conta
-                    .replace(/×/g, "*")
-                    .replace(/÷/g, "/")
-                    .replace(/,/g, ".");
+                let partes = conta.split(/([+\-×÷])/);
 
-                conta = eval(contaJS).toString();
-                resultado.textContent = conta;
-            } catch {
-                conta = "";
-                resultado.textContent = "0";
-            }
-            return;
+                let resultadoFinal = parseFloat(partes[0].replace(",", "."));
+
+                for (let i = 1; i < partes.length; i += 2) {
+                    let operador = partes[i];
+                    let numero = parseFloat(partes[i + 1].replace(",", "."));
+
+                    let operacao;
+
+                    if (operador === "+") operacao = soma;
+                    if (operador === "-") operacao = subtracao;
+                    if (operador === "×") operacao = multiplicacao;
+                    if (operador === "÷") operacao = divisao;
+
+                    resultadoFinal = calcular(resultadoFinal, numero, operacao);
+                }
+
+            conta = resultadoFinal.toString();
+            resultado.textContent = conta;
+
+        } catch {
+            conta = "";
+            resultado.textContent = "0";
         }
+        return;
+    }
 
        
         if (valor === "%") {
@@ -120,7 +134,6 @@ botoes.forEach(botao => {
 
         if (conta === "0" && valor !== ",") {
             conta = valor;
-            resultado.textContent = conta;
             return;
         }
 
